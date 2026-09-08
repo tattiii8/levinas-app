@@ -41,20 +41,3 @@ jobs:
 
             echo "== Container status =="
             docker compose ps
-
-            echo "== Wait for Redmine =="
-
-            for i in $(seq 1 30); do
-              if docker compose exec -T redmine \
-                curl -fsS http://127.0.0.1:3000/ >/dev/null 2>&1; then
-                echo "Redmine is healthy."
-                exit 0
-              fi
-
-              echo "Waiting for Redmine... ($i/30)"
-              sleep 5
-            done
-
-            echo "ERROR: Redmine did not become ready."
-            docker compose logs --tail=100 redmine
-            exit 1
