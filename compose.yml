@@ -1,0 +1,27 @@
+services:
+
+  redmine:
+    image: redmine:7.0.1
+    container_name: levinas-redmine
+    restart: unless-stopped
+
+    environment:
+      REDMINE_DB_MYSQL: 10.0.9.123
+      REDMINE_DB_PORT: 3306
+      REDMINE_DB_DATABASE: redmine
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD: ${REDMINE_DB_PASSWORD}
+      REDMINE_DB_ENCODING: utf8mb4
+      TZ: Asia/Tokyo
+
+    volumes:
+      - ./files:/usr/src/redmine/files
+      - ./plugins:/usr/src/redmine/plugins
+      - ./themes:/usr/src/redmine/themes
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: levinas-cloudflared
+    restart: unless-stopped
+
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
