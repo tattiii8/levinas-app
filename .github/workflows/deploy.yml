@@ -1,4 +1,4 @@
-name: Deploy LEVINAS
+name: Deploy Levinas
 
 on:
   push:
