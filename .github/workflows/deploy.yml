@@ -37,7 +37,7 @@ jobs:
             docker compose config -q
 
             echo "== Deploy =="
-            docker compose up -d
+            docker compose restart redmine
 
             echo "== Container status =="
             docker compose ps
