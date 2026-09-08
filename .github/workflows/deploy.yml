@@ -1,3 +1,4 @@
+```yaml
 name: Deploy LEVINAS
 
 on:
@@ -16,9 +17,44 @@ jobs:
           host: ${{ secrets.LEVINAS_HOST }}
           username: ubuntu
           key: ${{ secrets.LEVINAS_SSH_KEY }}
+
           script: |
             set -e
+
             cd /opt/levinas/redmine
+
+            echo "== Check working tree =="
+            git status --short
+
+            if [ -n "$(git status --porcelain)" ]; then
+              echo "ERROR: Working tree is not clean."
+              exit 1
+            fi
+
+            echo "== Pull latest code =="
             git pull --ff-only origin main
+
+            echo "== Validate compose file =="
+            docker compose config -q
+
+            echo "== Deploy =="
             docker compose up -d
+
+            echo "== Container status =="
             docker compose ps
+
+            echo "== Wait for Redmine =="
+            for i in $(seq 1 30); do
+              if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+                echo "Redmine is healthy."
+                exit 0
+              fi
+
+              echo "Waiting for Redmine... ($i/30)"
+              sleep 5
+            done
+
+            echo "ERROR: Redmine did not become ready."
+            docker compose logs --tail=100 redmine
+            exit 1
+```
