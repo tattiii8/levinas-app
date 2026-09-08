@@ -1,4 +1,3 @@
-```yaml
 name: Deploy LEVINAS
 
 on:
@@ -57,4 +56,3 @@ jobs:
             echo "ERROR: Redmine did not become ready."
             docker compose logs --tail=100 redmine
             exit 1
-```
